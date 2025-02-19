@@ -1,0 +1,5 @@
+@WAF_HostAddress = http://localhost:5011
+
+Accept: application/json
+
+###

@@ -1,0 +1,44 @@
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      SA_PASSWORD: ${DB_PASSWORD}
+      ACCEPT_EULA: Y
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql-data:/var/opt/mssql
+  vulnerableapp:
+    build:
+      context: ./VulnerableApp
+    ports:
+      - "5002:8080"
+    depends_on:
+      - db
+    environment:
+      - CONNECTION_STRING=Server=db;Database=MessageBoard;User Id=${DB_USER};Password=${DB_PASSWORD};TrustServerCertificate=True;
+  waf:
+    build:
+      context: .
+      dockerfile: ./DockerfileWAF
+    ports:
+      - "5000:8080"
+    depends_on:
+      - db
+      - vulnerableapp
+    environment:
+      - CONNECTION_STRING=Server=db;Database=WafRules;User Id=${DB_USER};Password=${DB_PASSWORD};TrustServerCertificate=True;
+      - SERVER_ADDRESS=http://vulnerableapp:8080
+  wafrulemanager:
+    build:
+      context: .
+      dockerfile: ./DockerfileWAFRuleManager
+    ports:
+      - "5001:8080"
+    depends_on:
+      - db
+    environment:
+      - CONNECTION_STRING=Server=db;Database=WafRules;User Id=${DB_USER};Password=${DB_PASSWORD};TrustServerCertificate=True;
+volumes:
+  sql-data:
+

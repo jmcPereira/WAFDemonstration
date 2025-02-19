@@ -1,0 +1,82 @@
+﻿@model List<WAFRuleModels.WafRule>
+
+@{
+    ViewData["Title"] = "Manage WAF Rules";
+}
+
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WAF Rules</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <h2 class="mb-4">Manage WAF Rules</h2>
+
+        <!-- Form to add WAF Rules -->
+        <form method="post" action="@Url.Action("Add", "WafRules")">
+            <div class="mb-3">
+                <label for="pattern" class="form-label">Pattern:</label>
+                <input type="text" id="pattern" name="Pattern" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="direction" class="form-label">Traffic Direction:</label>
+                <select id="direction" name="Direction" class="form-select" required>
+                    <option value="Inbound">Inbound</option>
+                    <option value="Outbound">Outbound</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="action" class="form-label">WAF Action:</label>
+                <select id="action" name="Action" class="form-select" required>
+                    <option value="CensorElement">Censor Element</option>
+                    <option value="Block">Block</option>
+                    <option value="Troll">Troll</option>
+                </select>
+            </div>
+            <div class="mb-3" id="trollReplacementContainer">
+                <label for="trollReplacement" class="form-label">Troll Replacement:</label>
+                <input type="text" id="trollReplacement" name="TrollReplacement" value="" class="form-control" />
+            </div>
+            <button type="submit" class="btn btn-primary">Add Rule</button>
+        </form>
+
+        <!-- Rules Table -->
+        <h3 class="mt-4">Existing Rules</h3>
+        <div style="max-height: 300px; overflow-y: auto;">
+            <table class="table table-bordered mt-3">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Pattern</th>
+                        <th>Traffic Direction</th>
+                        <th>WAF Action</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var rule in Model)
+                    {
+                        <tr>
+                            <td>@rule.Pattern</td>
+                            <td>@rule.TrafficDirectionKind</td>
+                            <td>@rule.WafAction</td>
+                            <td>
+                                <form method="post" action="@Url.Action("Delete", "WafRules")">
+                                    <input type="hidden" name="id" value="@rule.Id" />
+                                    <button type="submit" class="btn btn-danger" style="width: 40px; height: 40px;">❌&#xFE0E;</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+</body>
+</html>
